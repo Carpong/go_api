@@ -17,7 +17,7 @@ func main() {
 		fmt.Println("Error loading .env file")
 	}
 
-	database.InitDB()
+	database.Connect()
 	r := gin.Default()
 	r.POST("/register", AuthController.RegisterUser)
 	r.POST("/login", AuthController.LoginUser)

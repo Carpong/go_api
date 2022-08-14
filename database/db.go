@@ -1,22 +1,23 @@
 package database
 
 import (
+	"go/rest-api/models"
 	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var Db *gorm.DB
+var DB *gorm.DB
 var err error
 
-func InitDB() {
+func Connect() {
 	dsn := os.Getenv("MYSQL_DNS")
-	Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	Db.AutoMigrate(&User{})
-	Db.AutoMigrate(&UploadFile{})
+	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&models.UploadFile{})
 }

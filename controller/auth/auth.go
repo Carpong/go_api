@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"go/rest-api/database"
+	"go/rest-api/models"
 	"net/http"
 	"os"
 	"time"
@@ -26,16 +27,16 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	var CheckUser database.User
-	database.Db.Where("username = ?", json.Username).First(&CheckUser)
+	var CheckUser models.User
+	database.DB.Where("username = ?", json.Username).First(&CheckUser)
 	if CheckUser.ID > 0 {
 		c.JSON(http.StatusOK, gin.H{"status": "error", "message": "User Exists"})
 		return
 	}
 
 	HashPassword, _ := bcrypt.GenerateFromPassword([]byte(json.Password), 10)
-	user := database.User{Username: json.Username, Password: string(HashPassword)}
-	database.Db.Create(&user)
+	user := models.User{Username: json.Username, Password: string(HashPassword)}
+	database.DB.Create(&user)
 	if user.ID > 0 {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Create Success", "user_id": user.ID})
 	} else {
@@ -50,8 +51,8 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	var CheckUser database.User
-	database.Db.Where("username = ?", json.Username).First(&CheckUser)
+	var CheckUser models.User
+	database.DB.Where("username = ?", json.Username).First(&CheckUser)
 	if CheckUser.ID == 0 {
 		c.JSON(http.StatusOK, gin.H{"status": "error", "message": "User Exists"})
 		return
