@@ -18,4 +18,5 @@ func InitDB() {
 	}
 
 	Db.AutoMigrate(&User{})
+	Db.AutoMigrate(&UploadFile{})
 }

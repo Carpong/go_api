@@ -70,8 +70,3 @@ func LoginUser(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "error", "message": "Login Failed"})
 	}
 }
-
-func Logout(c *gin.Context) {
-	login := jwt.sign()
-	c.JSON(http.StatusOK, gin.H{"login": login})
-}

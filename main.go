@@ -24,5 +24,9 @@ func main() {
 	authorized := r.Group("/users", middleware.Auth())
 	authorized.GET("/readall", UserController.ReadAll)
 	authorized.GET("/profile", UserController.Profile)
+	authorized.GET("/fileall", UserController.Listfile)
+	authorized.POST("/upload", UserController.Upload)
+	authorized.PATCH("/update/:id", UserController.UpdateFile)
+	authorized.DELETE("/delete/:id", UserController.DeleteFile)
 	r.Run()
 }
