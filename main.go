@@ -2,8 +2,27 @@ package main
 
 import (
 	"fmt"
+	AuthController "go/rest-api/controller/auth"
+	UserController "go/rest-api/controller/user"
+	"go/rest-api/database"
+	"go/rest-api/middleware"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	fmt.Println("Hello World test")
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
+	database.InitDB()
+	r := gin.Default()
+	r.POST("/register", AuthController.RegisterUser)
+	r.POST("/login", AuthController.LoginUser)
+	authorized := r.Group("/users", middleware.Auth())
+	authorized.GET("/readall", UserController.ReadAll)
+	authorized.GET("/profile", UserController.Profile)
+	r.Run()
 }
