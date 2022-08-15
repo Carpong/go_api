@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,18 +23,22 @@ func Upload(c *gin.Context) {
 	userStr := fmt.Sprintf("%v", userId)
 	file, _ := c.FormFile("file")
 	GenName := file.Filename
+	Filetype := strings.Split(file.Filename, ".")
 
-	var CheckFile models.UploadFile
-	database.DB.Where("user_id = ?", userId).First(&CheckFile)
-	if CheckFile.ID > 0 {
-		now := time.Now().Format("20220815121905")
-		GenName = fmt.Sprintf("%v", now) + "_" + fmt.Sprintf("%v", rand.Intn(100)) + "_" + file.Filename
+	if Filetype[1] == "jpg" || Filetype[1] == "jpeg" || Filetype[1] == "png" || Filetype[1] == "gif" || Filetype[1] == "tiff" {
+		var CheckFile models.UploadFile
+		database.DB.Where("user_id = ?", userId).First(&CheckFile)
+		if CheckFile.ID > 0 {
+			now := time.Now().Format("20220815121905")
+			GenName = fmt.Sprintf("%v", now) + "_" + fmt.Sprintf("%v", rand.Intn(100)) + "_" + file.Filename
+		}
+		fileJson := models.UploadFile{UserId: userStr, FileName: file.Filename, FileNameGen: GenName}
+		database.DB.Create(&fileJson)
+		c.SaveUploadedFile(file, "public/images/"+GenName)
+		c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Uploaded file success"})
+		return
 	}
-	fileJson := models.UploadFile{UserId: userStr, FileName: file.Filename, FileNameGen: GenName}
-	database.DB.Create(&fileJson)
-	c.SaveUploadedFile(file, "public/images/"+GenName)
-	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Uploaded file success"})
-
+	c.JSON(http.StatusOK, gin.H{"status": "error", "message": "Support filetype image only"})
 }
 
 func UpdateFile(c *gin.Context) {
