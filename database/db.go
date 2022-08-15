@@ -20,4 +20,5 @@ func Connect() {
 
 	DB.AutoMigrate(&models.User{})
 	DB.AutoMigrate(&models.UploadFile{})
+	DB.AutoMigrate(&models.JwtBlacklist{})
 }

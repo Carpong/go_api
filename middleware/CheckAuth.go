@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"fmt"
+	"go/rest-api/database"
+	"go/rest-api/models"
 	"net/http"
 	"os"
 	"strings"
@@ -15,6 +17,14 @@ func Auth() gin.HandlerFunc {
 		hmacSampleSecret := []byte(os.Getenv("JWT_SECRET_KEY"))
 		header := c.Request.Header.Get("Authorization")
 		tokenString := strings.ReplaceAll(header, "Bearer ", "")
+
+		var CheckBlakclist models.JwtBlacklist
+		database.DB.Where("Token = ?", tokenString).First(&CheckBlakclist)
+
+		if CheckBlakclist.ID > 0 {
+			c.AbortWithStatusJSON(http.StatusOK, gin.H{"status": "error", "message": "Token is expired"})
+			return
+		}
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

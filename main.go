@@ -18,15 +18,15 @@ func main() {
 	}
 
 	database.Connect()
+
 	r := gin.Default()
 	r.POST("/register", AuthController.RegisterUser)
 	r.POST("/login", AuthController.LoginUser)
 	authorized := r.Group("/users", middleware.Auth())
-	authorized.GET("/readall", UserController.ReadAll)
-	authorized.GET("/profile", UserController.Profile)
+	authorized.POST("/logout", AuthController.LogoutUser)
 	authorized.GET("/fileall", UserController.Listfile)
 	authorized.POST("/upload", UserController.Upload)
-	authorized.PATCH("/update/:id", UserController.UpdateFile)
+	authorized.PUT("/update/:id", UserController.UpdateFile)
 	authorized.DELETE("/delete/:id", UserController.DeleteFile)
 	r.Run()
 }
